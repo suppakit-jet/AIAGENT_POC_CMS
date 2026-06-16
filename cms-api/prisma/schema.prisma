@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  AUTHOR
+}
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+  INVITED
+}
+
+enum ContentType {
+  ARTICLE
+  PAGE
+}
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  name         String
+  passwordHash String?    @map("password_hash")
+  role         Role       @default(AUTHOR)
+  status       UserStatus @default(INVITED)
+  lastLoginAt  DateTime?  @map("last_login_at")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  authoredContent Content[]        @relation("ContentAuthor")
+  auditEvents     AuditEvent[]     @relation("AuditActor")
+  mediaItems      MediaItem[]      @relation("MediaUploader")
+  apiKeys         ApiKey[]         @relation("ApiKeyCreator")
+  contentVersions ContentVersion[] @relation("ContentVersionEditor")
+
+  @@map("users")
+}
+
+model Content {
+  id     String        @id @default(uuid()) @db.Uuid
+  type   ContentType
+  title  String        @db.VarChar(200)
+  slug   String
+  body   Json?
+  status ContentStatus @default(DRAFT)
+
+  authorId String @map("author_id") @db.Uuid
+  author   User   @relation("ContentAuthor", fields: [authorId], references: [id])
+
+  featuredImageId String?    @map("featured_image_id") @db.Uuid
+  featuredImage   MediaItem? @relation("FeaturedImage", fields: [featuredImageId], references: [id])
+
+  socialImageId String?    @map("social_image_id") @db.Uuid
+  socialImage   MediaItem? @relation("SocialImage", fields: [socialImageId], references: [id])
+
+  seoTitle       String?  @map("seo_title") @db.VarChar(70)
+  seoDescription String?  @map("seo_description") @db.VarChar(160)
+  tags           String[] // Arrays are supported natively in Postgres
+  category       String?
+
+  parentId String?   @map("parent_id") @db.Uuid
+  parent   Content?  @relation("PageHierarchy", fields: [parentId], references: [id])
+  children Content[] @relation("PageHierarchy")
+
+  scheduledAt DateTime? @map("scheduled_at")
+  publishedAt DateTime? @map("published_at")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  versions  ContentVersion[]
+  mediaRefs ContentMediaRef[]
+
+  @@unique([type, slug])
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([authorId, status])
+  // @@index([tags], type: Gin) // Prisma doesn't fully support GIN natively without raw SQL, but we'll add it
+  @@map("content")
+}
+
+model ContentVersion {
+  id        String  @id @default(uuid()) @db.Uuid
+  contentId String  @map("content_id") @db.Uuid
+  content   Content @relation(fields: [contentId], references: [id])
+  versionNo Int     @map("version_no")
+  snapshot  Json
+
+  editorId String @map("editor_id") @db.Uuid
+  editor   User   @relation("ContentVersionEditor", fields: [editorId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([contentId, versionNo])
+  @@map("content_versions")
+}
+
+model MediaItem {
+  id         String  @id @default(uuid()) @db.Uuid
+  storageKey String  @map("storage_key")
+  filename   String
+  mimeType   String  @map("mime_type")
+  sizeBytes  BigInt  @map("size_bytes")
+  width      Int?
+  height     Int?
+  altText    String? @map("alt_text")
+  caption    String?
+  variants   Json? // { thumbnail: {key,w,h}, medium: {...} }
+
+  uploadedBy String @map("uploaded_by") @db.Uuid
+  uploader   User   @relation("MediaUploader", fields: [uploadedBy], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  featuredIn  Content[]         @relation("FeaturedImage")
+  socialIn    Content[]         @relation("SocialImage")
+  contentRefs ContentMediaRef[]
+
+  @@map("media_items")
+}
+
+// Intersect table for tracking media used directly inside content body
+model ContentMediaRef {
+  contentId String    @map("content_id") @db.Uuid
+  mediaId   String    @map("media_id") @db.Uuid
+  content   Content   @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  media     MediaItem @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([contentId, mediaId])
+  @@map("content_media_refs")
+}
+
+model ApiKey {
+  id         String    @id @default(uuid()) @db.Uuid
+  name       String
+  keyHash    String    @map("key_hash")
+  lastUsedAt DateTime? @map("last_used_at")
+  revokedAt  DateTime? @map("revoked_at")
+
+  createdBy String @map("created_by") @db.Uuid
+  creator   User   @relation("ApiKeyCreator", fields: [createdBy], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("api_keys")
+}
+
+model AuditEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  occurredAt DateTime @default(now()) @map("occurred_at")
+
+  actorId String? @map("actor_id") @db.Uuid
+  actor   User?   @relation("AuditActor", fields: [actorId], references: [id])
+
+  actorIp    String? @map("actor_ip")
+  action     String
+  targetType String  @map("target_type")
+  targetId   String? @map("target_id") @db.Uuid
+  summary    Json?
+
+  @@map("audit_events")
+}
