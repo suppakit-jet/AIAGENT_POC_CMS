@@ -1,0 +1,14 @@
+[
+  {
+    "output": {
+      "violations": [
+        {
+          "from": "src/modules/content/domain/content.entity.ts",
+          "to": "src/modules/content/adapters/persistence/prisma-repo.ts",
+          "rule": "no-adapter-in-domain",
+          "severity": "error"
+        }
+      ]
+    }
+  }
+]

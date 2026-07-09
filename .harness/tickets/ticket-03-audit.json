@@ -1,0 +1,46 @@
+{
+  "$schema": "./ticket.schema.json",
+  "ticket_id": "TICKET-03",
+  "title": "Ticket-03: Audit Logging Module",
+  "phase": "BACKEND",
+  "decision_maker": "Agent proposed",
+  "stage": "Full-Stack Feature",
+  "impact_level": "High",
+  "review_date": "2026-07-09",
+  "inputs": [],
+  "outputs": [
+    "backend/src/modules/audit/domain/entities/audit-log.entity.ts",
+    "backend/src/modules/audit/domain/entities/audit-log.entity.spec.ts",
+    "backend/src/modules/audit/application/ports/out/audit-log.repository.interface.ts",
+    "backend/src/modules/audit/application/use-cases/log-action.use-case.ts",
+    "backend/src/modules/audit/application/use-cases/log-action.use-case.spec.ts",
+    "backend/src/modules/audit/adapters/out/persistence/prisma-audit-log.repository.ts",
+    "backend/src/modules/audit/adapters/out/persistence/prisma-audit-log.repository.spec.ts",
+    "backend/src/modules/audit/adapters/in/http/audit.controller.ts",
+    "backend/src/modules/audit/adapters/in/http/audit.controller.spec.ts"
+  ],
+  "constraints": [
+    "ทำตามหลัก Hexagonal Architecture อย่างเคร่งครัด",
+    "ใช้ TDD ทุก layer: RED -> GREEN -> REFACTOR",
+    "Prefix ของทุก route คือ /api/admin/audit"
+  ],
+  "definition_of_done": [
+    "[x] 1. [Domain Layer] สร้าง AuditLog entity",
+    "[x] 2. [Application Layer] สร้าง AuditLogRepository port และ LogAction UseCase",
+    "[x] 3. [Adapter Layer] สร้าง PrismaAuditLogRepository และ AuditController GET /api/admin/audit",
+    "[x] 4. รัน python .harness/harness-runner.py ผ่านครบ 6 Gates 100%"
+  ],
+  "pre_mortem": {
+    "risks": [
+      {
+        "type": "Performance Risk",
+        "description": "การบันทึก Audit log ช้าส่งผลกระทบต่อ main request",
+        "mitigation": "ออกแบบ UseCase ให้ทำงานได้อย่างรวดเร็วและเป็นอิสระ"
+      }
+    ],
+    "success_criteria": [
+      "GET /api/admin/audit คืนค่ารายการ log ถูกต้อง",
+      "harness-runner.py PASS ทุก gate"
+    ]
+  }
+}

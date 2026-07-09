@@ -1,0 +1,23 @@
+{
+  "title": "Contract-01: User Entity GREEN Phase",
+  "phase": "BACKEND",
+  "decision_maker": "Human approved / Agent proposed",
+  "stage": "Backend Domain",
+  "impact_level": "High",
+  "review_date": "หลังครบ 3 TDD cycles",
+  "inputs": [
+    "backend/src/modules/auth/domain/entities/user.entity.spec.ts"
+  ],
+  "outputs": [
+    "backend/src/modules/auth/domain/entities/user.entity.ts"
+  ],
+  "constraints": [
+    "Domain Purity: ห้ามมีการ Import สิ่งใดๆ จาก nestjs, @nestjs/*, @prisma/client หรือ framework ภายนอกอื่นๆ เข้ามาในไฟล์นี้โดยเด็ดขาด [04-ARCH]",
+    "Hasher Port: ห้ามนำ argon2 หรือไลบรารีเข้ารหัสอื่นๆ มาเรียกใช้โดยตรง ต้องรับเข้ามาในรูปแบบของ Interface (IPasswordHasher) ผ่านการ Inject เข้ามาที่ Static Factory Method",
+    "Business Logic Enforcement: ต้องมีโค้ดตรวจสอบเงื่อนไขรหัสผ่านขั้นต่ำ 12 ตัวอักษร และกำหนดสิทธิ Role ให้อยู่ใน 3 Roles (Admin, Editor, Author) ตาม [BR-05] และ [FR-AUTH-02]"
+  ],
+  "definition_of_done": [
+    "[x] 1. รัน vitest → GREEN 3/3 tests",
+    "[x] 2. รัน m-hex.py → 0 violations"
+  ]
+}

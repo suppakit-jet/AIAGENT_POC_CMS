@@ -1,0 +1,9 @@
+<coverage line-rate="0.99">
+  <packages>
+    <package name="modules/content">
+      <classes>
+        <class filename="src/modules/content/entities/content.ts" line-rate="1.0"/>
+      </classes>
+    </package>
+  </packages>
+</coverage>

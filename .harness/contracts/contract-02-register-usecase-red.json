@@ -1,0 +1,27 @@
+{
+  "title": "Contract-02: Register User Use Case (RED Phase)",
+  "phase": "BACKEND",
+  "decision_maker": "Human approved / Agent proposed",
+  "stage": "Application Layer (Use Case) และ Ports",
+  "impact_level": "High",
+  "review_date": "หลังครบ 3 TDD cycles",
+  "inputs": [
+    "ฟีเจอร์ (Feature): ระบบสมัครสมาชิก (Register User)",
+    "Layer ที่เกี่ยวข้อง: Application Layer (Use Case) และ Ports"
+  ],
+  "outputs": [
+    "backend/src/modules/auth/application/use-cases/register-user.use-case.spec.ts"
+  ],
+  "constraints": [
+    "Domain Purity (Application Layer): ห้ามมีการ Import สิ่งใดๆ จาก nestjs, @nestjs/*, @prisma/client หรือ framework ภายนอกอื่นๆ เข้ามาใน Application layer เด็ดขาด [04-ARCH]",
+    "Ports & Adapters: ต้องนิยาม Interface สำหรับ Port เช่น IUserRepository (มี method อย่าง findByEmail และ save) และต้องใช้ IPasswordHasher จากรอบที่แล้ว",
+    "Dependency Injection: Use Case จะต้องรับ Dependencies (Repository, Hasher) ผ่าน Constructor เท่านั้น (ห้าม instantiate โดยตรงภายในคลาส)",
+    "Test Cases ที่ต้องการ: 1. Success: สร้าง User สำเร็จเมื่อให้ข้อมูลถูกต้อง -> คาดหวังว่าจะเรียก hasher, และ repository.save 2. Fail (Duplicate Email): โยน Exception หรือคืนค่า Error เมื่อพบว่ามีอีเมลนี้ในระบบแล้ว 3. Fail (Validation): โยน Exception ถ้ารหัสผ่านสั้นเกินไปหรือ Role ไม่ถูกต้อง"
+  ],
+  "definition_of_done": [
+    "[x] สร้างไฟล์ Test: register-user.use-case.spec.ts",
+    "[x] รัน vitest → FAIL (เพราะยังไม่มี implementation)",
+    "[x] รัน m-hex.py → PASS (0 violations)",
+    "[x] ได้รับการยืนยันจาก User เพื่อไปสู่ขั้นตอนต่อไป (เขียน Implementation ใน GREEN Phase)"
+  ]
+}

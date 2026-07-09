@@ -1,0 +1,424 @@
+{
+  "requirements": [
+    {
+      "id": "BR-01",
+      "description": "Content creation & SEO validation: Support Article and Page types with mandatory Title, Body, Slug, and SEO meta description.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "BR-02",
+      "description": "Content Lifecycle & Workflow: Enforce Draft -> Review -> Publish state transitions and prevent invalid state changes.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "BR-03",
+      "description": "Audit Logging: Every create, update, delete, and state change action shall be logged in an append-only audit trail.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "BR-04",
+      "description": "Public API: Expose read-only endpoints for published content items with caching headers.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "BR-05",
+      "description": "Role-Based Access Control (RBAC): Enforce exactly 3 roles (Admin, Editor, Author) and prevent deletion of the last Admin account.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "BR-08",
+      "description": "Security & Token Lifecycle: Issue JWT access and refresh tokens, invalidate refresh tokens upon logout or deactivation, enforce account lockout.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-01",
+      "description": "Authenticate users via email and password.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-02",
+      "description": "Enforce passwords of minimum length 12 characters, containing at least one letter and one digit.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-03",
+      "description": "Hash passwords using Argon2id/bcrypt. Plaintext passwords never logged or stored.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-04",
+      "description": "Issue JWT access token and refresh token upon successful login.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-05",
+      "description": "Invalidate refresh tokens upon password change, user deactivation, or explicit logout.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-06",
+      "description": "Lock account after 5 failed login attempts within 10 minutes.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-07",
+      "description": "Provide password reset flow via one-time email link valid for 60 minutes.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-08",
+      "description": "Password reset links shall be single-use and invalidated after use or expiry.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-09",
+      "description": "Allow users to log out and invalidate refresh token server-side.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTH-10",
+      "description": "Failed login attempts and successful logins written to audit log.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-01",
+      "description": "Only Admin role can create, edit, deactivate, or delete user accounts.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-02",
+      "description": "Invite users by email with one-time link to set initial password.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-03",
+      "description": "Each user has exactly one role: Admin, Editor, or Author.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-04",
+      "description": "Prevent deletion of the last remaining Admin account.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-05",
+      "description": "Deactivated users denied login immediately while authored content remains intact.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-06",
+      "description": "Display list of users with name, email, role, status, and last login.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-07",
+      "description": "Email addresses unique system-wide and RFC 5322 compliant.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-USER-08",
+      "description": "All user mutation actions written to audit log.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTHZ-01",
+      "description": "Enforce permission matrix on every protected endpoint at route and data access layers.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTHZ-02",
+      "description": "Authors can only create, view, edit, and submit their own content.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTHZ-03",
+      "description": "Editors can view, edit, publish, and unpublish all content regardless of author.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTHZ-04",
+      "description": "Admins have all Editor permissions plus user and audit log management.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTHZ-05",
+      "description": "Unauthorized requests return HTTP 403, unauthenticated return HTTP 401.",
+      "ticket": "ticket-01-auth",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUTHZ-06",
+      "description": "Public API only exposes content with status Published and published_at <= current time.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-01",
+      "description": "Support content types Article and Page.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-02",
+      "description": "Every content item has unique URL-safe slug auto-generated from title.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-03",
+      "description": "Prevent slug collisions within a content type.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-04",
+      "description": "Content transitions only along defined lifecycle states.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-05",
+      "description": "Content saveable as Draft with only Title populated.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-06",
+      "description": "Publishing requires non-empty Title, Body, Slug, and SEO meta description.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-07",
+      "description": "Support scheduled publish by setting scheduled_at timestamp.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-08",
+      "description": "Retain version history on every save with snapshot and editor identity.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-09",
+      "description": "Allow reverting content to prior version by creating a new version.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-10",
+      "description": "Support listing content with filters and pagination.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-11",
+      "description": "Support case-insensitive title search on content list.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-12",
+      "description": "Unpublishing removes item from public API within 60 seconds.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-13",
+      "description": "Deletion is soft delete retained for 30 days.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-14",
+      "description": "Rich text Body stored in structured JSON/sanitized format.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-15",
+      "description": "Rich text editor supports standard formatting elements.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-CONTENT-16",
+      "description": "All content mutation actions written to audit log.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-01",
+      "description": "Support uploading PNG, JPEG, WEBP, GIF, SVG, PDF.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-02",
+      "description": "Maximum file size 20 MB per file (configurable).",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-03",
+      "description": "Reject uploads whose MIME type, extension, or magic bytes do not match allow-list.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-04",
+      "description": "Uploads use presigned URLs directly to object storage.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-05",
+      "description": "Generate responsive variants (thumbnail, medium) per image.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-06",
+      "description": "Media items store editable alt text, caption, and metadata.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-07",
+      "description": "Prevent deletion of media item referenced by active content.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-MEDIA-08",
+      "description": "Media library supports search by filename and filters by uploader/date.",
+      "ticket": "ticket-04-media",
+      "status": "done"
+    },
+    {
+      "id": "FR-SEO-01",
+      "description": "Content items include SEO Title, Meta Description, Slug, and Social Share Image.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-SEO-02",
+      "description": "Default SEO Title to content Title and Meta Description to first 160 characters.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-SEO-03",
+      "description": "Public API includes all SEO fields in single-item responses.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUDIT-01",
+      "description": "Record audit events with timestamp, actor, IP, action, target, and change summary.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUDIT-02",
+      "description": "Audit actions include auth, user management, content changes, and media changes.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUDIT-03",
+      "description": "Audit log is append-only without API/UI to modify or delete.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUDIT-04",
+      "description": "Audit log retained for at least 365 days.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUDIT-05",
+      "description": "Admins can view audit log filtered by actor, action, target, and date range.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "FR-AUDIT-06",
+      "description": "Audit log UI paginated and exportable as CSV.",
+      "ticket": "ticket-03-audit",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-01",
+      "description": "Public API exposes read-only endpoints.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-02",
+      "description": "Authentication via API key passed in X-API-Key header.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-03",
+      "description": "Public API returns only Published content with published_at <= current time.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-04",
+      "description": "Responses include cache headers.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-05",
+      "description": "Support pagination via page and page_size query parameters.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-06",
+      "description": "Standardized error shape with code, message, and details.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    },
+    {
+      "id": "FR-PUBAPI-07",
+      "description": "OpenAPI 3.1 spec kept in sync with implementation.",
+      "ticket": "ticket-02-content",
+      "status": "done"
+    }
+  ]
+}

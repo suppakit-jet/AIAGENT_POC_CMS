@@ -1,0 +1,25 @@
+{
+  "title": "Contract-03: RegisterUser Adapter (NestJS & Prisma) - RED Phase",
+  "phase": "RED",
+  "inputs": [
+    "backend/src/modules/auth/application/use-cases/register-user.use-case.ts",
+    "backend/src/modules/auth/application/ports/out/user.repository.interface.ts",
+    "backend/src/modules/auth/application/ports/out/password-hasher.interface.ts"
+  ],
+  "outputs": [
+    "backend/src/modules/auth/adapters/in/web/register-user.controller.spec.ts",
+    "backend/src/modules/auth/adapters/out/persistence/prisma-user.repository.spec.ts",
+    "backend/src/modules/auth/adapters/out/cryptography/argon2-password-hasher.spec.ts"
+  ],
+  "constraints": [
+    "Hexagonal Architecture: Adapters (in/web, out/persistence) must only communicate with the Application layer via Ports or Use Cases. Do not leak Prisma into Domain/Application.",
+    "NestJS Framework: Controller must only handle HTTP routing (req/res) and DTO validation, then immediately delegate to the UseCase.",
+    "Cryptography: Argon2 implementation must strictly adhere to the IPasswordHasher interface."
+  ],
+  "definition_of_done": [
+    "[x] 1. Create unit/integration test files for Controller, Prisma Repository, and Argon2 Hasher.",
+    "[x] 2. Run vitest -> MUST FAIL (RED Phase because implementations don't exist yet).",
+    "[x] 3. Run m-hex.py -> MUST PASS (0 violations).",
+    "[x] 4. Wait for user approval before moving to GREEN phase."
+  ]
+}

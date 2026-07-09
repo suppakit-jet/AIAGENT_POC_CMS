@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project Progress Dashboard Schema",
+  "description": "JSON Schema สำหรับตรวจสอบความถูกต้องของไฟล์ progress.json ในระบบ Harness",
+  "type": "object",
+  "required": ["last_updated", "features", "sensors", "next_contract"],
+  "properties": {
+    "last_updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "วันที่อัปเดตสถานะล่าสุด ในรูปแบบ YYYY-MM-DD"
+    },
+    "features": {
+      "type": "array",
+      "description": "รายการฟีเจอร์และภารกิจของโปรเจกต์",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "stage", "status", "contract"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "รหัสฟีเจอร์ เช่น F-001"
+          },
+          "name": {
+            "type": "string",
+            "description": "ชื่อหรือคำอธิบายฟีเจอร์/ภารกิจ"
+          },
+          "stage": {
+            "type": "string",
+            "description": "ชั้นหรือขั้นตอนการพัฒนา เช่น Backend Domain, Harness Infrastructure"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["completed", "in-progress", "pending"],
+            "description": "สถานะความคืบหน้าของภารกิจ"
+          },
+          "contract": {
+            "type": ["string", "null"],
+            "description": "ชื่อไฟล์ Contract ที่เกี่ยวข้อง (หรือ null หากไม่มี)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sensors": {
+      "type": "array",
+      "description": "สถานะล่าสุดของเซนเซอร์และเครื่องมือวัดผลในระบบ Harness",
+      "items": {
+        "type": "object",
+        "required": ["name", "last_run", "status", "value"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "ชื่อไฟล์หรือเครื่องมือเซนเซอร์ เช่น m-cov.py"
+          },
+          "last_run": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "วันที่รันเซนเซอร์ล่าสุด ในรูปแบบ YYYY-MM-DD"
+          },
+          "status": {
+            "type": "string",
+            "description": "สถานะผลการรัน เช่น PASS, FAIL"
+          },
+          "value": {
+            "type": "string",
+            "description": "ค่าหรือเกณฑ์วัดที่ได้จากการรันล่าสุด"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "next_contract": {
+      "type": "string",
+      "description": "รหัสหรือชื่อ Contract ถัดไปที่จะทำ"
+    }
+  },
+  "additionalProperties": false
+}

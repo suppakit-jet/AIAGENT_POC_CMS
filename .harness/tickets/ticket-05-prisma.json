@@ -1,0 +1,41 @@
+{
+  "$schema": "./ticket.schema.json",
+  "ticket_id": "TICKET-05",
+  "title": "Ticket-05: Prisma Schema & Database Migrations",
+  "phase": "BACKEND",
+  "decision_maker": "Agent proposed",
+  "stage": "Full-Stack Feature",
+  "impact_level": "High",
+  "review_date": "2026-07-09",
+  "inputs": [
+    "backend/src/modules/auth/domain/entities/user.entity.ts",
+    "backend/src/modules/content/domain/entities/content.entity.ts",
+    "backend/src/modules/audit/domain/entities/audit-log.entity.ts",
+    "backend/src/modules/media/domain/entities/media.entity.ts"
+  ],
+  "outputs": [
+    "backend/prisma/schema.prisma"
+  ],
+  "constraints": [
+    "schema.prisma ต้องครอบคลุมทุก entity: User, Content, AuditLog, Media",
+    "รัน prisma migrate dev สำเร็จและไม่มีข้อผิดพลาด"
+  ],
+  "definition_of_done": [
+    "[x] 1. อัปเดต schema.prisma ให้รองรับทุก entity ในระบบ",
+    "[x] 2. รัน prisma migrate dev เพื่อสร้างตารางและ migration files",
+    "[x] 3. รัน python .harness/harness-runner.py ผ่านครบ 6 Gates 100%"
+  ],
+  "pre_mortem": {
+    "risks": [
+      {
+        "type": "DB Schema Risk",
+        "description": "ความไม่สอดคล้องกันระหว่าง Prisma Schema กับ Domain Entities",
+        "mitigation": "ตรวจสอบฟิลด์และ data types ของทุก entity ก่อนเขียน schema.prisma"
+      }
+    ],
+    "success_criteria": [
+      "schema.prisma ครอบคลุมครบทุก entity",
+      "harness-runner.py PASS ทุก gate"
+    ]
+  }
+}

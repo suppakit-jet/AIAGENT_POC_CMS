@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Context Window & Token Budget Allocation",
+  "description": "การกำหนดเพดานงบประมาณโทเคน (Token Budget) และกฎการอ่านไฟล์เพื่อป้องกัน Context Window Overflow สำหรับ AI Agents ในแต่ละ Session",
+  "max_budget": 50000,
+  "mandatory_reads": [
+    ".harness/context/AGENTS.md",
+    ".harness/context/project-brief.md",
+    ".harness/context/metrics_inventory.md",
+    ".harness/context/decision-log.md",
+    ".harness/handoffs/ (อ่านเฉพาะไฟล์ Handoff ล่าสุด)"
+  ],
+  "conditional_reads": [
+    ".harness/runbooks/tdd-cycle.md (อ่านก่อนเริ่มเขียน Test หรือ Implement)",
+    ".harness/runbooks/failure-guide.md (อ่านเมื่อ Quality Gates หรือ Sensors ล้มเหลว)",
+    ".harness/runbooks/onboarding.md (อ่านตอนปฐมนิเทศ Agent ใหม่)",
+    ".harness/gates/gate-spec.md (อ่านเมื่อต้องการตรวจสอบเกณฑ์ CI/CD)",
+    ".harness/context/knowledge_inventory.md (อ่านเมื่อค้นหาความรู้เฉพาะทางในโปรเจกต์)",
+    "backend/prisma/schema.prisma (อ่านเมื่อทำงานเกี่ยวข้องกับ Database Schema)"
+  ],
+  "estimated_tokens": {
+    "mandatory_reads_total": 3500,
+    "conditional_reads_avg": 2000,
+    "working_memory_reserve": 44500,
+    "max_budget": 50000
+  },
+  "guidelines": [
+    "1. ห้ามรันคำสั่งอ่านไฟล์โค้ดทั้งโปรเจกต์พร้อมกัน (No Dump All) ให้ใช้ grep_search หาเฉพาะจุดที่ต้องการ",
+    "2. อ่านเฉพาะไฟล์ที่เกี่ยวข้องใน Contract ปัจจุบันเท่านั้น เพื่อสงวน Token Budget สำหรับการคิดวิเคราะห์ของโมเดล",
+    "3. หากใช้ Budget เกิน 80% (40,000 tokens) แนะนำให้สรุป Handoff และขึ้น Session ใหม่"
+  ]
+}

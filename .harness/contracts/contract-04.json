@@ -1,0 +1,39 @@
+{
+  "title": "Contract-04: Cross-Platform Harness System (Windows & macOS)",
+  "phase": "INFRA",
+  "decision_maker": "Human approved / Agent proposed",
+  "stage": "Harness Infrastructure",
+  "impact_level": "High",
+  "review_date": "หลังครบ 3 TDD cycles",
+  "inputs": [
+    ".harness/context/AGENTS.md",
+    ".harness/context/metrics_inventory.md",
+    ".harness/sensors/m-cov.py",
+    ".harness/sensors/m-hex.py",
+    ".harness/guardrails/pre-commit.sh",
+    ".harness/guardrails/pre-push.sh"
+  ],
+  "outputs": [
+    ".harness/guardrails/install_hooks.py",
+    ".harness/guardrails/pre_commit.py",
+    ".harness/guardrails/pre_push.py",
+    ".harness/sensors/m-tdd.py",
+    ".harness/harness-runner.py",
+    ".harness/test_harness.py",
+    ".git/hooks/pre-commit",
+    ".git/hooks/pre-push"
+  ],
+  "constraints": [
+    "Cross-Platform: Must execute cleanly on both Windows (CMD/PowerShell/Git Bash) and macOS/Linux (Zsh/Bash).",
+    "No Shell Dependencies: Must not rely on Bash-only utilities (jq, xmlstarlet, /tmp, /dev/null). Use standard Python libraries (pathlib, tempfile, subprocess).",
+    "Windows Robustness: Any subprocess call to npm/npx on Windows must be wrapped in cmd.exe /c automatically.",
+    "Zero Regression: Existing sensors (m-cov, m-hex) must continue to pass 100% when invoked via the new runner."
+  ],
+  "definition_of_done": [
+    "[x] 1. [Phase 1] Create install_hooks.py, pre_commit.py, and pre_push.py cross-platform guardrails.",
+    "[x] 2. [Phase 2] Create m-tdd.py sensor and unified harness-runner.py CLI.",
+    "[x] 3. [Phase 3] Create test_harness.py automated tests and verify 100% pass rate.",
+    "[x] 4. [Phase 3] Update AGENTS.md with cross-platform instructions and commands.",
+    "[x] 5. Confirm completion with user and generate Handoff report."
+  ]
+}

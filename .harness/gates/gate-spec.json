@@ -1,0 +1,94 @@
+{
+  "gates": [
+    {
+      "id": "L-01",
+      "group": "local",
+      "trigger": "git commit",
+      "tool": "TypeScript Typecheck (npx tsc --noEmit)",
+      "threshold": "0 errors",
+      "blocking": true,
+      "classification": "Inferred"
+    },
+    {
+      "id": "L-02",
+      "group": "local",
+      "trigger": "git commit",
+      "tool": "ESLint (npx eslint src --ext .ts)",
+      "threshold": "0 errors",
+      "blocking": true,
+      "classification": "Inferred"
+    },
+    {
+      "id": "L-03",
+      "group": "local",
+      "trigger": "git commit",
+      "tool": "Hexagonal Architecture (python .harness/sensors/m-hex.py)",
+      "threshold": "0 violations",
+      "blocking": true,
+      "classification": "Inferred"
+    },
+    {
+      "id": "P-01",
+      "group": "push",
+      "trigger": "git push",
+      "tool": "Coverage Gate Sensor (python .harness/sensors/m-cov.py)",
+      "threshold": ">= 98% Line/Branch Coverage",
+      "blocking": true,
+      "classification": "Inferred"
+    },
+    {
+      "id": "P-02",
+      "group": "push",
+      "trigger": "git push",
+      "tool": "Architecture Gate Sensor (python .harness/sensors/m-hex.py)",
+      "threshold": "0 violations",
+      "blocking": true,
+      "classification": "Inferred"
+    },
+    {
+      "id": "G-03",
+      "group": "ci",
+      "trigger": "PR Open / Sync",
+      "tool": "Lint + Typecheck + Unit Test + Arch Sensor + Security Scan",
+      "threshold": "Pass 100% (Coverage >= 98%, Arch = 0 violations)",
+      "blocking": true,
+      "classification": "Document"
+    },
+    {
+      "id": "G-04",
+      "group": "ci",
+      "trigger": "PR Merge",
+      "tool": "E2E Tests (Playwright)",
+      "threshold": "Pass 100% of Critical User Flows",
+      "blocking": true,
+      "classification": "Document"
+    },
+    {
+      "id": "G-05",
+      "group": "ci",
+      "trigger": "Main Branch",
+      "tool": "Full Test Suite + Build Artifacts + Vulnerability Scan",
+      "threshold": "Pass 100%, Zero High/Critical CVEs",
+      "blocking": true,
+      "classification": "Document"
+    },
+    {
+      "id": "G-06",
+      "group": "ci",
+      "trigger": "Staging Environment",
+      "tool": "Database Migration + Deploy + Smoke Tests",
+      "threshold": "100% Smoke Tests Passed, Migration cleanly applied",
+      "blocking": true,
+      "classification": "Document"
+    },
+    {
+      "id": "G-07",
+      "group": "ci",
+      "trigger": "Production Environment",
+      "tool": "Manual Approval Required + Production Readiness Check",
+      "threshold": "Approved by Lead Engineer / Product Owner",
+      "blocking": true,
+      "classification": "Document"
+    }
+  ]
+}

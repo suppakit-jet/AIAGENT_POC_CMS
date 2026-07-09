@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Quality Gates Specification Schema",
+  "description": "JSON Schema สำหรับตรวจสอบความถูกต้องของไฟล์ gate-spec.json ในระบบ Harness",
+  "type": "object",
+  "required": ["gates"],
+  "properties": {
+    "gates": {
+      "type": "array",
+      "description": "รายการด่านตรวจสอบคุณภาพ (Quality Gates) ทั้งหมด",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "group",
+          "trigger",
+          "tool",
+          "threshold",
+          "blocking",
+          "classification"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "รหัส Gate เช่น L-01, P-01, G-03"
+          },
+          "group": {
+            "type": "string",
+            "enum": ["local", "push", "ci"],
+            "description": "กลุ่มของด่านตรวจสอบ (local, push, หรือ ci)"
+          },
+          "trigger": {
+            "type": "string",
+            "description": "เหตุการณ์ที่กระตุ้นให้รัน Gate เช่น git commit, git push, PR Merge"
+          },
+          "tool": {
+            "type": "string",
+            "description": "เครื่องมือหรือเซนเซอร์ที่ใช้ตรวจสอบ"
+          },
+          "threshold": {
+            "type": "string",
+            "description": "เกณฑ์ผ่านขั้นต่ำ เช่น 0 errors, >= 98%"
+          },
+          "blocking": {
+            "type": "boolean",
+            "description": "ระบุว่าหากไม่ผ่านจะระงับกระบวนการ (Block) หรือไม่"
+          },
+          "classification": {
+            "type": "string",
+            "enum": ["Document", "Inferred"],
+            "description": "ประเภทที่มาของเกณฑ์ (Document = จากเอกสารสถาปัตยกรรม, Inferred = เพิ่มเติมจาก TDD/Shift-Left)"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

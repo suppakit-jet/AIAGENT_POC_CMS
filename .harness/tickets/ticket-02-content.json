@@ -1,0 +1,55 @@
+{
+  "$schema": "./ticket.schema.json",
+  "ticket_id": "TICKET-02",
+  "title": "Ticket-02: Content Module (Article & Page Management with Workflow)",
+  "phase": "BACKEND",
+  "decision_maker": "Agent proposed",
+  "stage": "Full-Stack Feature",
+  "impact_level": "High",
+  "review_date": "2026-07-09",
+  "inputs": [
+    "backend/src/modules/auth/domain/entities/user.entity.ts"
+  ],
+  "outputs": [
+    "backend/src/modules/content/domain/entities/content.entity.ts",
+    "backend/src/modules/content/domain/entities/content.entity.spec.ts",
+    "backend/src/modules/content/application/ports/out/content.repository.interface.ts",
+    "backend/src/modules/content/application/use-cases/create-content.use-case.ts",
+    "backend/src/modules/content/application/use-cases/create-content.use-case.spec.ts",
+    "backend/src/modules/content/application/use-cases/update-content.use-case.ts",
+    "backend/src/modules/content/application/use-cases/update-content.use-case.spec.ts",
+    "backend/src/modules/content/application/use-cases/delete-content.use-case.ts",
+    "backend/src/modules/content/application/use-cases/delete-content.use-case.spec.ts",
+    "backend/src/modules/content/application/use-cases/get-content.use-case.ts",
+    "backend/src/modules/content/application/use-cases/get-content.use-case.spec.ts",
+    "backend/src/modules/content/adapters/out/persistence/prisma-content.repository.ts",
+    "backend/src/modules/content/adapters/out/persistence/prisma-content.repository.spec.ts",
+    "backend/src/modules/content/adapters/in/http/content.controller.ts",
+    "backend/src/modules/content/adapters/in/http/content.controller.spec.ts"
+  ],
+  "constraints": [
+    "ทำตามหลัก Hexagonal Architecture อย่างเคร่งครัด (Domain ห้ามขึ้นกับ NestJS/Prisma) [M-HEX-01]",
+    "รองรับ Draft -> Review -> Publish workflow ใน Domain",
+    "ใช้ TDD ทุก layer: RED -> GREEN -> REFACTOR",
+    "Prefix ของทุก route คือ /api/admin/content"
+  ],
+  "definition_of_done": [
+    "[x] 1. [Domain Layer] สร้าง Content Entity (Article + Page) พร้อมระบบ State Workflow (Draft -> Review -> Publish)",
+    "[x] 2. [Application Layer] สร้าง ContentRepository port และ CRUD UseCases พร้อม Unit Tests 100% coverage",
+    "[x] 3. [Adapter Layer] สร้าง PrismaContentRepository และ ContentController ภายใต้เส้นทาง /api/admin/content",
+    "[x] 4. รัน python .harness/harness-runner.py ผ่านครบ 6 Gates 100%"
+  ],
+  "pre_mortem": {
+    "risks": [
+      {
+        "type": "Domain Risk",
+        "description": "การเปลี่ยนสถานะผิดกฎ Workflow (เช่น Publish โดยไม่ผ่านขั้นตอนที่ถูกต้อง)",
+        "mitigation": "ตรวจสอบ State transition ใน Content entity method และเขียน unit test ครอบคลุม"
+      }
+    ],
+    "success_criteria": [
+      "CRUD endpoints ภายใต้ /api/admin/content ทำงานถูกต้อง",
+      "harness-runner.py PASS ทุก gate"
+    ]
+  }
+}

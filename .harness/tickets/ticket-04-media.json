@@ -1,0 +1,46 @@
+{
+  "$schema": "./ticket.schema.json",
+  "ticket_id": "TICKET-04",
+  "title": "Ticket-04: Media Library Module",
+  "phase": "BACKEND",
+  "decision_maker": "Agent proposed",
+  "stage": "Full-Stack Feature",
+  "impact_level": "Medium",
+  "review_date": "2026-07-09",
+  "inputs": [],
+  "outputs": [
+    "backend/src/modules/media/domain/entities/media.entity.ts",
+    "backend/src/modules/media/domain/entities/media.entity.spec.ts",
+    "backend/src/modules/media/application/ports/out/storage.port.ts",
+    "backend/src/modules/media/application/use-cases/upload-media.use-case.ts",
+    "backend/src/modules/media/application/use-cases/upload-media.use-case.spec.ts",
+    "backend/src/modules/media/application/use-cases/get-media.use-case.ts",
+    "backend/src/modules/media/application/use-cases/get-media.use-case.spec.ts",
+    "backend/src/modules/media/adapters/in/http/media.controller.ts",
+    "backend/src/modules/media/adapters/in/http/media.controller.spec.ts"
+  ],
+  "constraints": [
+    "ทำตามหลัก Hexagonal Architecture อย่างเคร่งครัด",
+    "ใช้ TDD ทุก layer: RED -> GREEN -> REFACTOR",
+    "Prefix ของทุก route คือ /api/admin/media"
+  ],
+  "definition_of_done": [
+    "[x] 1. [Domain Layer] สร้าง Media entity",
+    "[x] 2. [Application Layer] สร้าง StoragePort และ UploadMedia/GetMedia UseCases",
+    "[x] 3. [Adapter Layer] สร้าง MediaController ภายใต้เส้นทาง /api/admin/media",
+    "[x] 4. รัน python .harness/harness-runner.py ผ่านครบ 6 Gates 100%"
+  ],
+  "pre_mortem": {
+    "risks": [
+      {
+        "type": "Storage Risk",
+        "description": "การจัดเก็บไฟล์ผิดรูปแบบหรือขนาดเกินกำหนด",
+        "mitigation": "ตรวจสอบ metadata ของไฟล์ใน UseCase ก่อนจัดเก็บ"
+      }
+    ],
+    "success_criteria": [
+      "Endpoints /api/admin/media ทำงานถูกต้อง",
+      "harness-runner.py PASS ทุก gate"
+    ]
+  }
+}

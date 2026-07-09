@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task Ticket Schema",
+  "description": "Schema for defining tickets before execution in TDD or implementation phases.",
+  "type": "object",
+  "required": ["title", "phase", "inputs", "outputs", "constraints", "definition_of_done"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The name of the ticket (e.g., Ticket-01: Authentication Module)"
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["RED", "GREEN", "REFACTOR", "INFRA", "CHORE", "ADAPTER", "BACKEND", "FULLSTACK"],
+      "description": "The current TDD or development phase"
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Prerequisite files, features, or context required to start the task"
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The expected files to be created or modified"
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Architectural rules, forbidden actions, or boundary constraints"
+    },
+    "definition_of_done": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Checklist items that must be checked off before the task is considered complete (e.g. Sensors, Tests)"
+    }
+  }
+}

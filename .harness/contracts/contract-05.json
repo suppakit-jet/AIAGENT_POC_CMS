@@ -1,0 +1,61 @@
+{
+  "title": "Contract-05: RegisterUser Adapter Layer (Inbound HTTP & Outbound DB)",
+  "phase": "BACKEND",
+  "decision_maker": "Human approved / Agent proposed",
+  "stage": "Backend Adapters",
+  "impact_level": "High",
+  "review_date": "หลังจบ Contract-05",
+  "inputs": [
+    "backend/src/modules/auth/application/use-cases/register-user.use-case.ts",
+    "backend/src/modules/auth/application/ports/out/user.repository.interface.ts",
+    "backend/src/modules/auth/domain/entities/user.entity.ts"
+  ],
+  "outputs": [
+    "backend/src/modules/auth/adapters/in/http/auth.controller.ts",
+    "backend/src/modules/auth/adapters/in/http/auth.controller.spec.ts",
+    "backend/src/modules/auth/adapters/out/persistence/prisma-user.repository.ts",
+    "backend/src/modules/auth/adapters/out/persistence/prisma-user.repository.spec.ts"
+  ],
+  "constraints": [
+    "NestJS decorators อยู่ใน adapter เท่านั้น (ห้ามหลุดเข้าไปใน Domain หรือ Application layer เด็ดขาด) [04-ARCH]",
+    "IUserRepository มาจาก application/ports/out/ เดิมเท่านั้น",
+    "Domain และ Application layer ต้องไม่มีการแก้ไขใดๆ เพื่อรักษา Hexagonal Architecture [M-HEX-01]",
+    "ใช้ TDD ทุก adapter: ต้องเขียน Test (RED) ให้ Fail ก่อน implement (GREEN) และ refactor (REFACTOR) เสมอ โดยหยุดรอ Confirm ทุก Phase"
+  ],
+  "definition_of_done": [
+    "[x] 1. [RED] สร้างไฟล์เทสต์ auth.controller.spec.ts และ prisma-user.repository.spec.ts แล้วรัน Vitest เพื่อตรวจสอบสถานะ Fail",
+    "[x] 2. [GREEN] Implement auth.controller.ts (รับ RegisterUserDto -> เรียก RegisterUserUseCase -> return HTTP 201) และ prisma-user.repository.ts (implement findByEmail และ save ด้วย Prisma Client จริง)",
+    "[x] 3. [REFACTOR] ปรับปรุงความสะอาดของโค้ดโดยไม่เปลี่ยน Behavior",
+    "[x] 4. รัน python .harness/harness-runner.py ต้องผ่านครบทั้ง 5 Gates 100% (Typecheck, Lint, TDD ratio >= 1.0, Coverage >= 98%, Hex Arch 0 violations)",
+    "[x] 5. ขออนุมัติจาก User ก่อนจบ Contract และสร้าง Handoff report"
+  ],
+  "pre_mortem": {
+    "risks": [
+      {
+        "type": "Arch Risk",
+        "description": "NestJS decorators อาจหลุดเข้า Application/Domain layer",
+        "mitigation": "m-hex.py จะ block ทันที และ ห้ามแตะไฟล์ domain/ application/"
+      },
+      {
+        "type": "DB Risk",
+        "description": "Prisma ต้องการ schema ก่อนใช้งาน",
+        "mitigation": "mock Prisma Client ใน unit test แทน DB จริง"
+      },
+      {
+        "type": "DI Risk",
+        "description": "NestJS DI config อาจ setup ผิด",
+        "mitigation": "ใช้ NestJS Testing module ใน spec file"
+      },
+      {
+        "type": "Coverage Risk",
+        "description": "ลืมเขียน test exception paths",
+        "mitigation": "เขียน test ทั้ง success และ error case ทุก adapter"
+      }
+    ],
+    "success_criteria": [
+      "POST /auth/register ทำงานได้จริงผ่าน HTTP",
+      "Prisma repository บันทึก user ลง DB ได้",
+      "harness-runner.py PASS ทุก gate"
+    ]
+  }
+}

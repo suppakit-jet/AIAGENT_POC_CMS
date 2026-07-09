@@ -1,0 +1,10 @@
+<coverage line-rate="0.965">
+  <packages>
+    <package name="modules/content">
+      <classes>
+        <class filename="src/modules/content/use-cases/publish-content.ts" line-rate="0.90"/>
+        <class filename="src/modules/content/entities/content.ts" line-rate="0.99"/>
+      </classes>
+    </package>
+  </packages>
+</coverage>

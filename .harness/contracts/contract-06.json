@@ -1,0 +1,62 @@
+{
+  "title": "Contract-06: Auth Login Feature (Domain, UseCase, and Adapter Layers)",
+  "phase": "BACKEND",
+  "decision_maker": "Human approved / Agent proposed",
+  "stage": "Full-Stack Feature",
+  "impact_level": "High",
+  "review_date": "หลังจบ Contract-06",
+  "inputs": [
+    "backend/src/modules/auth/domain/entities/user.entity.ts",
+    "backend/src/modules/auth/application/ports/out/user.repository.interface.ts",
+    "backend/src/modules/auth/application/ports/out/password-hasher.interface.ts"
+  ],
+  "outputs": [
+    "backend/src/modules/auth/application/ports/out/password-hasher.interface.ts",
+    "backend/src/modules/auth/application/ports/out/token-generator.interface.ts",
+    "backend/src/modules/auth/application/use-cases/login-user.use-case.ts",
+    "backend/src/modules/auth/application/use-cases/login-user.use-case.spec.ts",
+    "backend/src/modules/auth/adapters/out/cryptography/argon2-password-hasher.ts",
+    "backend/src/modules/auth/adapters/out/cryptography/argon2-password-hasher.spec.ts",
+    "backend/src/modules/auth/adapters/out/cryptography/jwt-token-generator.ts",
+    "backend/src/modules/auth/adapters/out/cryptography/jwt-token-generator.spec.ts",
+    "backend/src/modules/auth/adapters/in/http/login.controller.ts",
+    "backend/src/modules/auth/adapters/in/http/login.controller.spec.ts"
+  ],
+  "constraints": [
+    "ทำตามหลัก Hexagonal Architecture อย่างเคร่งครัด (Domain ห้ามขึ้นกับ NestJS หรือ External lib ใดๆ)",
+    "NestJS decorators อยู่ใน adapter layer เท่านั้น",
+    "การพัฒนาทุก Layer (Domain, UseCase, Adapter) ต้องดำเนินผ่านวงจร TDD (RED -> GREEN -> REFACTOR) เสมอ โดยหยุดรอ Confirm จาก User ก่อนเปลี่ยน Phase หรือเปลี่ยน Layer",
+    "ห้ามสร้างไฟล์นอกเหนือจากที่ระบุใน outputs ของ contract นี้",
+    "เพิ่ม compare() method ใน password-hasher.interface.ts เท่านั้น ห้ามแก้ส่วนอื่น"
+  ],
+  "definition_of_done": [
+    "[x] 1. [Application Layer & Ports - TDD] เขียนเทสต์และ implement Outbound Ports (ITokenGenerator, เพิ่ม compare ใน IPasswordHasher) และ LoginUserUseCase",
+    "[x] 2. [Adapter Layer - TDD] เขียนเทสต์และ implement LoginController (POST /auth/login), JwtTokenGenerator และ Argon2PasswordHasher.compare",
+    "[x] 3. [REFACTOR & Verification] รัน python .harness/harness-runner.py ต้องผ่านครบทั้ง 6 Gates 100% (Structure, Typecheck, Lint, TDD ratio, Coverage >= 98%, Hex Arch 0 violations)",
+    "[x] 4. ขออนุมัติจาก User ก่อนจบ Contract และสร้าง Handoff report"
+  ],
+  "pre_mortem": {
+    "risks": [
+      {
+        "type": "Security/Domain Risk",
+        "description": "การตรวจสอบรหัสผ่านผิดพลาดหรือรั่วไหล",
+        "mitigation": "ตรวจสอบ password hash ผ่าน Outbound Port เท่านั้น ห้ามเขียนฟังก์ชันเปรียบเทียบรหัสผ่านเองใน Domain"
+      },
+      {
+        "type": "Arch Risk",
+        "description": "Library สำหรับสร้าง JWT หลุดเข้าไปใน Application หรือ Domain layer",
+        "mitigation": "ใช้ ITokenGenerator interface ใน Application layer และ implement ด้วย JWT library ใน Outbound Adapter เท่านั้น"
+      },
+      {
+        "type": "Test/Coverage Risk",
+        "description": "ลืมทดสอบกรณีเข้าสู่ระบบไม่สำเร็จ (เช่น ไม่พบอีเมล หรือ รหัสผ่านไม่ถูกต้อง)",
+        "mitigation": "เขียน Unit Test ครอบคลุมทั้งกรณี Success (200 OK) และ Failure (401 Unauthorized) ในทุก Layer"
+      }
+    ],
+    "success_criteria": [
+      "สามารถเข้าสู่ระบบผ่าน POST /auth/login ได้สำเร็จและได้รับ JWT Token",
+      "กรณีข้อมูลผู้ใช้ไม่ถูกต้อง ระบบคืนค่า HTTP 401 Unauthorized",
+      "harness-runner.py PASS ทุก gate (100% Coverage)"
+    ]
+  }
+}

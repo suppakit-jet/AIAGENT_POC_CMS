@@ -1,0 +1,49 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("VIEWER")
+  status       String   @default("active")
+  createdAt    DateTime @default(now())
+}
+
+model Content {
+  id        String   @id @default(uuid())
+  title     String
+  slug      String   @unique
+  body      String
+  type      String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String
+  actorId    String?
+  details    String?
+  createdAt  DateTime @default(now())
+}
+
+model Media {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  url          String
+  uploadedBy   String?
+  createdAt    DateTime @default(now())
+}
