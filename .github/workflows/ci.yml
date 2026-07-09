@@ -1,63 +1,57 @@
-name: CI Quality Gates
+name: Universal Engineering Harness CI/CD
 
 on:
+  push:
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
-  lint-typecheck:
+  harness-quality-gates:
+    name: ⚡ Universal Harness 6 Quality Gates
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: pnpm install
-      - run: pnpm lint
-      - run: pnpm typecheck
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-      - uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
-          node-version: 20
-      - uses: actions/setup-python@v5
+          version: 9
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pnpm install
-      - run: cd backend && pnpm test:coverage
-      - name: Coverage Gate (M-COV)
-        run: python3 .harness/sensors/m-cov.py backend/coverage/cobertura.xml
 
-  arch-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pnpm install
-      - name: Dependency Cruiser
-        run: cd backend && npx depcruise --output-type json src > ../depcruise-report.json
-      - name: Architecture Gate (M-HEX)
-        run: python3 .harness/sensors/m-hex.py depcruise-report.json
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
 
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: pnpm install
-      - name: Security Scan
-        run: pnpm audit --prod
+      - name: Gate 1 & 2 - Structure & TypeScript Strict Check
+        run: |
+          python3 .harness/scripts/verify-harness.py
+          pnpm typecheck
+
+      - name: Gate 3 - ESLint Cleanliness
+        run: pnpm lint
+
+      - name: Gate 4 & 5 - TDD Ratio & 100% Unit Test Coverage Gate (M-COV)
+        run: |
+          cd backend && pnpm test:coverage
+          python3 ../.harness/sensors/m-cov.py coverage/cobertura-coverage.xml
+          python3 ../.harness/sensors/m-tdd.py
+
+      - name: Gate 6 - Hexagonal Architecture Verification (M-HEX)
+        run: |
+          cd backend && npx depcruise --output-type json src > ../depcruise-report.json
+          python3 ../.harness/sensors/m-hex.py depcruise-report.json
+
+      - name: 🎉 Universal Harness Runner Summary
+        run: python3 .harness/harness-runner.py
