@@ -42,7 +42,9 @@ def verify_harness():
         "progress.json",
         "runbooks/tdd-cycle.md",
         "runbooks/failure-guide.md",
-        "runbooks/onboarding.md"
+        "runbooks/onboarding.md",
+        "workflows/harness-workflow.json",
+        "workflows/agent-execution-workflow.md"
     ]
     
     missing_files = []

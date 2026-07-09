@@ -163,9 +163,19 @@ Martin Fowler ได้เปรียบเทียบการพัฒนา
 - **บทบาท:** **"ใครเป็นผู้ตรวจสอบผู้ตรวจสอบ? (Quis custodiet ipsos custodes?)"** สคริปต์นี้ถูกสร้างขึ้นเพื่อทดสอบว่าตัว Harness ทำงานได้อย่างถูกต้องจริง ไม่เกิด False Positive หรือ False Negative
 - **การทำงาน:**
   1. **Negative Testing:** จำลองสร้างไฟล์โค้ดที่ละเมิดสถาปัตยกรรม (เช่น Domain import NestJS) แล้วตรวจสอบว่า `m-hex.py` แจ้ง `FAIL` ตามคาดหรือไม่
+
+### 3.3 📄 `.harness/workflows/` (Universal 6-Stage Execution Workflow Specification)
+- **บทบาท:** ควบคุมเส้นทางชีวิต (Lifecycle State Machine) ของการพัฒนาซอฟต์แวร์ร่วมกับ AI Agent และทีมพัฒนา โดยกำหนดไว้ 2 รูปแบบทั้ง Machine-Readable (`harness-workflow.json`) และ Human-Readable (`agent-execution-workflow.md`)
+- **6 ขั้นตอนการทำงานที่เป็นมาตรฐานบังคับ (Deterministic 6-Stage Workflow):**
+  1. **Stage 1 (Task Intake & Specification Alignment):** รับเข้างานจาก Ticket (`.harness/tickets/`) และตรวจสอบความสอดคล้องกับ Requirements (`Docs/01-governance/`)
+  2. **Stage 2 (Pre-mortem Risk Analysis & Contract Definition):** สร้าง Contract กำหนด `Definition of Done (DoD)` และวิเคราะห์ความเสี่ยงก่อนเริ่มเขียนโค้ด
+  3. **Stage 3 (Test-Driven Development — Red Phase):** สร้างไฟล์ Unit Test (`*.spec.ts`) ให้ Fail ตามสเปกก่อน โดยมี Sensor `m-tdd.py` คอยตรวจ Test-to-Code Ratio
+  4. **Stage 4 (Implementation & Hexagonal Architecture Conformance — Green Phase):** เขียนโค้ดจริงใน Domain / Ports / Adapters ให้ผ่านเทสต์ทั้งหมด โดยมี Sensor `m-hex.py` ตรวจห้ามละเมิดสถาปัตยกรรม และ `m-cov.py` บังคับ Coverage 100%
+  5. **Stage 5 (Universal Gate Verification):** รัน `python3 .harness/harness-runner.py` เพื่อตรวจสอบทั้ง 6 Quality Gates ต้องได้สถานะ `ALL PASSED`
+  6. **Stage 6 (Knowledge Handoff & Synchronization):** บันทึกรายงาน Handoff อัปเดตสถานะ Ticket เป็น `DONE` และบันทึกผ่านระบบ Git Guardrails (`pre-commit` / `pre-push`)
   2. **Coverage Testing:** จำลองปรับลด Coverage แล้วตรวจสอบว่า `m-cov.py` สามารถสกัดกั้นการทำงานได้จริงหรือไม่
 
-### 3.3 📄 `.harness/scripts/verify-harness.py` (Harness Structure Sensor)
+### 3.4 📄 `.harness/scripts/verify-harness.py` (Harness Structure Sensor)
 - **บทบาท:** ตรวจสอบว่าไฟล์ในระบบ Harness ครบถ้วนทั้ง 19 ไฟล์ที่จำเป็น ไม่มีการลบหรือแก้ไขไฟล์สำคัญโดยไม่ได้ตั้งใจ
 
 ---

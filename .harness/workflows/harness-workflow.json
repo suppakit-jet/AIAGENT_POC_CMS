@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Universal Harness Engineering Workflow Specification",
+  "version": "1.0.0",
+  "description": "Defines the deterministic 6-stage operational lifecycle for developers and AI Agents within the Harness Engineering framework.",
+  "workflow_states": [
+    {
+      "state_id": "STAGE_1_INTAKE",
+      "name": "Task Intake & Specification Alignment",
+      "description": "Parse requirement specifications, load active tickets, and verify acceptance criteria before writing code.",
+      "required_artifacts": [
+        ".harness/tickets/ticket-*.json",
+        ".harness/context/acceptance-criteria.json",
+        "Docs/01-governance/02-Software-Requirements-Specification.md"
+      ],
+      "exit_condition": "Ticket loaded and mapped to Business Requirements (BR) and Functional Requirements (FR)."
+    },
+    {
+      "state_id": "STAGE_2_PRE_MORTEM_AND_CONTRACT",
+      "name": "Pre-mortem Risk Analysis & Contract Definition",
+      "description": "Define the Definition of Done (DoD) in a contract and perform proactive failure analysis.",
+      "required_artifacts": [
+        ".harness/contracts/contract-*.json",
+        ".harness/pre-mortem/contract-*-pre-mortem.md"
+      ],
+      "exit_condition": "Contract Definition of Done checklist defined and Pre-mortem risks identified."
+    },
+    {
+      "state_id": "STAGE_3_TDD_RED",
+      "name": "Test-Driven Development — Red Phase",
+      "description": "Write automated failing unit tests conforming to the contract specification before writing business logic.",
+      "sensors_enforced": [
+        "m-tdd.py"
+      ],
+      "exit_condition": "Failing test files created (.spec.ts) and Test-to-Code ratio sensor active."
+    },
+    {
+      "state_id": "STAGE_4_TDD_GREEN_AND_HEXAGONAL",
+      "name": "Implementation & Hexagonal Architecture Conformance",
+      "description": "Implement business logic strictly within decoupled Domain / Ports / Adapters layers until all tests pass.",
+      "sensors_enforced": [
+        "m-hex.py",
+        "m-cov.py"
+      ],
+      "exit_condition": "Unit tests pass at 100% coverage and 0 Hexagonal Architecture violations."
+    },
+    {
+      "state_id": "STAGE_5_UNIVERSAL_GATE_VERIFICATION",
+      "name": "Universal Quality Gates Execution",
+      "description": "Execute harness-runner.py to verify all 6 quality gates across the entire codebase.",
+      "sensors_enforced": [
+        "verify-harness.py",
+        "m-cov.py",
+        "m-hex.py",
+        "m-tdd.py"
+      ],
+      "exit_condition": "harness-runner.py returns exit code 0 (ALL PASSED)."
+    },
+    {
+      "state_id": "STAGE_6_HANDOFF_AND_POST_MORTEM",
+      "name": "Knowledge Handoff & Progress Synchronization",
+      "description": "Create immutable handoff report, capture lessons learned, and mark ticket/acceptance criteria as DONE.",
+      "required_artifacts": [
+        ".harness/handoffs/handoff-*.md",
+        ".harness/progress.json",
+        ".harness/context/acceptance-criteria.json"
+      ],
+      "exit_condition": "Handoff recorded and repository state committed."
+    }
+  ],
+  "enforcement_policy": {
+    "bypass_allowed": false,
+    "guardrails_hook": ".harness/guardrails/pre_commit.py",
+    "continuous_integration": ".github/workflows/ci.yml"
+  }
+}
