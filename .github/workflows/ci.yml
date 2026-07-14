@@ -48,7 +48,7 @@ jobs:
         run: |
           cd backend && pnpm test:coverage
           python3 ../.harness/sensors/m-cov.py coverage/cobertura-coverage.xml
-          python3 ../.harness/sensors/m-tdd.py
+          python3 ../.harness/sensors/m-tdd.py src
 
       - name: Gate 6 - Hexagonal Architecture Verification (M-HEX)
         run: |
