@@ -2,9 +2,9 @@ name: Universal Engineering Harness CI/CD
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, Branch1]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, Branch1]
   workflow_dispatch:
 
 jobs:
@@ -57,3 +57,10 @@ jobs:
 
       - name: 🎉 Universal Harness Runner Summary
         run: python3 .harness/harness-runner.py
+
+      - name: 📈 DORA Metrics Collection & Exporter (M-DORA)
+        if: always()
+        env:
+          DORA_METRICS_ENDPOINT: ${{ secrets.DORA_METRICS_ENDPOINT }}
+          CI_JOB_STATUS: ${{ job.status }}
+        run: python3 .harness/sensors/m-dora.py

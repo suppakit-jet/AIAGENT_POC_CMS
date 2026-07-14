@@ -89,6 +89,15 @@
       "threshold": "Approved by Lead Engineer / Product Owner",
       "blocking": true,
       "classification": "Document"
+    },
+    {
+      "id": "M-DORA-01",
+      "group": "metrics",
+      "trigger": "Post-Deploy / CI Summary",
+      "tool": "DORA Metrics Exporter (.harness/sensors/m-dora.py)",
+      "threshold": "DF >= 1/day, LTFC < 1h, CFR < 15%, MTTR < 1h",
+      "blocking": false,
+      "classification": "Inferred"
     }
   ]
 }
