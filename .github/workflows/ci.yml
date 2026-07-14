@@ -42,6 +42,8 @@ jobs:
       - name: Gate 3 - ESLint Cleanliness
         run: pnpm lint
 
+      - run: cd backend && npx prisma generate
+
       - name: Gate 4 & 5 - TDD Ratio & 100% Unit Test Coverage Gate (M-COV)
         run: |
           cd backend && pnpm test:coverage

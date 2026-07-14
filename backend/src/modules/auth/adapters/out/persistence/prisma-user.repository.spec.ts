@@ -132,9 +132,11 @@ describe('PrismaUserRepository', () => {
   });
 
   it('should connect to database when onModuleInit is called on PrismaService', async () => {
-    const service = new PrismaService();
-    service.$connect = vi.fn().mockResolvedValue(undefined) as any;
-    await service.onModuleInit();
-    expect(service.$connect).toHaveBeenCalledTimes(1);
+    const mockPrismaService = {
+      $connect: vi.fn().mockResolvedValue(undefined),
+      onModuleInit: PrismaService.prototype.onModuleInit,
+    };
+    await mockPrismaService.onModuleInit();
+    expect(mockPrismaService.$connect).toHaveBeenCalledTimes(1);
   });
 });
