@@ -56,3 +56,36 @@
 - เอกสาร Contract จะมี scope ของไฟล์ใน `inputs` และ `outputs` ที่ครอบคลุมทั้ง 3 Layers (Domain, UseCase, Adapter)
 - ช่วยให้ Agent และ Developer เห็นภาพรวมของ Feature ได้ชัดเจนยิ่งขึ้นในที่เดียว
 
+## 2026-08-20 — DL-005: Enterprise Continuous Deployment (CD) Pipeline & Staging Guardrails (G-04..G-07)
+**Status:** Accepted
+**Stage:** Infrastructure & CI/CD Pipeline
+**Decision Maker:** Human approved / Agent proposed
+**Context:** ระบบเดิมมีเพียง CI Quality Gates 6 ด่านผ่าน Harness (`.github/workflows/ci.yml`) แต่ยังขาดการ Package เป็น Container, การปรับใช้ไป Staging/Production และการตรวจทาน E2E ในสภาพแวดล้อมรันไทม์จริง
+**Decision:** ยกระดับระบบ CI/CD โดยเพิ่มขั้นตอน 5 Gates สำคัญ:
+1. **G-05:** Multi-stage Docker Builds สำหรับ Backend และ Frontend พร้อม Push ไปยัง GitHub Container Registry (`ghcr.io`)
+2. **G-06:** Automatic Staging Deployment เมื่อมีการ Merge เข้า branch หลัก
+3. **G-04:** Automated E2E Verification ด้วย Playwright บน Staging Environment
+4. **G-07:** Production Deployment แบบตัดวงจรด้วย Manual Approval Gate (`environment: production`)
+5. **SLA Monitoring:** Post-deployment Health check และ Uptime SLA Tracking
+**Criteria:**
+- 1) การันตี Container Immutability (Build ครั้งเดียวใช้ได้ทุก Environment)
+- 2) ลดความเสี่ยงในการ Deploy ขึ้น Prod ด้วย E2E Tests และ Required Reviewer Gate
+**Consequences:**
+- เพิ่มไฟล์ `backend/Dockerfile`, `frontend/Dockerfile`, `frontend/nginx.conf`, `docker-compose.yml` และ `.github/workflows/cd.yml`
+- รับประกันคุณภาพและเสถียรภาพของระบบก่อนถึงมือผู้ใช้งานจริง 100%
+
+## 2026-08-20 — DL-006: Target Deployment Stack Selection (Render/Railway + Managed PostgreSQL + GHCR)
+**Status:** Accepted
+**Stage:** Production Deployment Architecture
+**Decision Maker:** Human approved
+**Context:** ต้องเลือกชุด Stack สำหรับ Deployment ของ CMS MVP เพื่อใช้งานบน Staging และ Production
+**Decision:** สรุปเลือกชุดเทคโนโลยี Deployment ดังนี้:
+1. **Hosting / PaaS:** Render / Railway (ความซับซ้อนต่ำ เหมาะสมที่สุดสำหรับ MVP และทำ Auto-Deploy จาก GitHub ได้ง่าย)
+2. **Database:** Managed PostgreSQL บน Render / Railway (เปลี่ยน Prisma provider เป็น `postgresql` รองรับผ่าน `DATABASE_URL`)
+3. **Container Registry:** GitHub Container Registry — GHCR (`ghcr.io`) (ฟรี ทำงานร่วมกับ GitHub Actions ใน `cd.yml` ได้ทันที)
+**Consequences:**
+- อัปเดต `backend/prisma/schema.prisma` ให้ใช้ `provider = "postgresql"` และ `url = env("DATABASE_URL")`
+- การตั้งค่า Environment Variables บน Render/Railway เพียงระบุ `DATABASE_URL` และ `JWT_SECRET`
+
+
+

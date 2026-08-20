@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  cms-backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cms-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=file:/app/backend/prisma/dev.db
+      - JWT_SECRET=super_secret_jwt_key_for_cms_mvp
+    restart: unless-stopped
+    networks:
+      - cms-network
+
+  cms-frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: cms-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - cms-backend
+    restart: unless-stopped
+    networks:
+      - cms-network
+
+networks:
+  cms-network:
+    driver: bridge
