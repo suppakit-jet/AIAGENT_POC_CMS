@@ -2,9 +2,9 @@ name: Universal Engineering Harness CI/CD
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, Branch1]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, Branch1]
   workflow_dispatch:
 
 jobs:
@@ -44,16 +44,114 @@ jobs:
 
       - run: cd backend && npx prisma generate
 
+      - name: Frontend Checks & Verification
+        run: |
+          cd frontend && pnpm build
+
       - name: Gate 4 & 5 - TDD Ratio & 100% Unit Test Coverage Gate (M-COV)
         run: |
           cd backend && pnpm test:coverage
           python3 ../.harness/sensors/m-cov.py coverage/cobertura-coverage.xml
-          python3 ../.harness/sensors/m-tdd.py
+          python3 ../.harness/sensors/m-tdd.py src
 
       - name: Gate 6 - Hexagonal Architecture Verification (M-HEX)
         run: |
           cd backend && npx depcruise --output-type json src > ../depcruise-report.json
           python3 ../.harness/sensors/m-hex.py depcruise-report.json
 
-      - name: 🎉 Universal Harness Runner Summary
-        run: python3 .harness/harness-runner.py
+  # ====================================================
+  # G-05: Build & Push Docker Image to GHCR
+  # ====================================================
+  build-and-push:
+    name: 🐳 G-05: Build & Push Docker Image
+    needs: harness-quality-gates
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/Branch1'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/cms-backend
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # ====================================================
+  # G-06: Deploy to Railway (Staging)
+  # ====================================================
+  deploy-staging:
+    name: 🚀 G-06: Deploy to Railway (Staging)
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/Branch1'
+    environment: staging
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway Staging
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NODE_ENV: production
+        run: |
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway up --service cms-backend --detach
+
+  # ====================================================
+  # G-07: Production Deploy (Manual Approve)
+  # ====================================================
+  deploy-production:
+    name: 🛡️ G-07: Production Deploy (Manual Approve)
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/Branch1'
+    environment: production
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway Production
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NODE_ENV: production
+        run: |
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway up --service cms-backend-prod --detach

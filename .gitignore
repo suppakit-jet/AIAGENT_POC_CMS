@@ -34,3 +34,6 @@ Thumbs.db
 # Temporary / System generated
 .system_generated/
 *.tmp
+
+# Harness runtime metrics
+.harness/dora-history.jsonl
