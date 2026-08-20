@@ -7,6 +7,9 @@ on:
     branches: [main, master, Branch1]
   workflow_dispatch:
 
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/cms_db' }}
+
 jobs:
   harness-quality-gates:
     name: ⚡ Universal Harness 6 Quality Gates
@@ -42,7 +45,8 @@ jobs:
       - name: Gate 3 - ESLint Cleanliness
         run: pnpm lint
 
-      - run: cd backend && npx prisma generate
+      - name: Generate Prisma Client
+        run: cd backend && npx prisma generate
 
       - name: Frontend Checks & Verification
         run: |
